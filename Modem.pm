@@ -9,10 +9,10 @@
 # testing and support for generic AT commads, so use it at your own risk,
 # and without ANY warranty! Have fun.
 #
-# $Id: Modem.pm,v 1.36 2004/02/22 17:18:43 cosimo Exp $
+# $Id: Modem.pm,v 1.39 2004/08/18 07:33:32 cosimo Exp $
 
 package Device::Modem;
-$VERSION = sprintf '%d.%02d', q$Revision: 1.36 $ =~ /(\d)\.(\d+)/;
+$VERSION = sprintf '%d.%02d', q$Revision: 1.39 $ =~ /(\d)\.(\d+)/;
 
 BEGIN {
 
@@ -565,7 +565,7 @@ sub _answer {
     # If we expect something, we must first match against serial input
     my $done = (defined $expect and $expect ne '');
 
-#$me->log->write('debug', 'answer: expecting ['.($expect||'').']'.($timeout ? ' or '.($timeout/1000).' seconds timeout' : '' ) );
+$me->log->write('debug', 'answer: expecting ['.($expect||'').']'.($timeout ? ' or '.($timeout/1000).' seconds timeout' : '' ) );
 
     # Main read cycle
     my $cycles = 0;
@@ -575,17 +575,17 @@ sub _answer {
     my $end_time   = 0;
 
     # If timeout was defined, check max time (timeout is in milliseconds)
-    #$me->log->write('debug', 'answer: timeout value is '.$timeout);
+$me->log->write('debug', 'answer: timeout value is '.($timeout||'undef'));
 
     if( defined $timeout && $timeout > 0 ) {
         $end_time = $start_time + ($timeout / 1000);
 
-        #$me->log->write( debug => 'answer: end time set to '.$end_time );
+$me->log->write( debug => 'answer: end time set to '.$end_time );
     }
 
     do {
 
-        my($howmany, $what) = $me->port->read(10);
+        my($howmany, $what) = $me->port->read(100);
 
         # Timeout count incremented only on empty readings
         if( defined $what && $howmany > 0 ) {
@@ -598,7 +598,6 @@ sub _answer {
                 $done = ( defined $answer && $answer =~ $expect ) ? 1 : 0;
             }
 
-            #$me->log->write('debug', 'time_slice='.$time_slice);
             $me->wait($time_slice) unless $done;
 
         # Check if we reached max time for timeout (only if end_time is defined)
@@ -612,12 +611,11 @@ sub _answer {
             $done = 1;
         }
 
-#$me->log->write('debug', 'done = '.$done );
-#$me->log->write('debug', 'end_time='.$end_time.' now='.time().' start_time='.$start_time );
+$me->log->write('debug', 'done='.$done.' end_time='.$end_time.' now='.time().' start_time='.$start_time );
 
       } while (not $done);
 
-    $me->log->write('debug', 'answer: read ['.($answer||'').']' );
+    $me->log->write('info', 'answer: read ['.($answer||'').']' );
 
     # Flush receive and trasmit buffers
     $me->port->purge_all;
@@ -658,8 +656,8 @@ sub parse_answer {
     pop   @buff while $buff[-1] =~ /^[\r\n]+/o;
 
     # Extract responde code
-    my $code = pop @buff;
     $buff = join( CR, @buff );
+    my $code = pop @buff;
 
     return
       wantarray
@@ -808,6 +806,12 @@ that you can take as (yea) examples:
 
 Tests if modem is alive
 
+=item `examples/caller-id.pl'
+
+Waits for an incoming call and displays date, time and phone number of the caller.
+Normally this is available everywhere, but you should check your local phone line
+and settings.
+
 =item `examples/dial.pl'
 
 Dials a phone number and display result of call
@@ -815,6 +819,15 @@ Dials a phone number and display result of call
 =item `examples/shell.pl'
 
 (Very) poor man's minicom/hyperterminal utility
+
+=item `examples/xmodem.pl'
+
+First attempt at a test script to receive a file via xmodem protocol.
+Please be warned that this thing does not have a chance to work. It's
+only a (very low priority) work in progress...
+
+If you want to help out, be welcome!
+
 
 =back
 
