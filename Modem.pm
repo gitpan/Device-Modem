@@ -9,14 +9,14 @@
 # testing and support for generic AT commads, so use it at your own risk,
 # and without ANY warranty! Have fun.
 #
-# $Id: Modem.pm,v 1.39 2004/08/18 07:33:32 cosimo Exp $
+# $Id: Modem.pm,v 1.43 2004/11/10 09:20:04 cosimo Exp $
 
 package Device::Modem;
-$VERSION = sprintf '%d.%02d', q$Revision: 1.39 $ =~ /(\d)\.(\d+)/;
+$VERSION = sprintf '%d.%02d', q$Revision: 1.43 $ =~ /(\d)\.(\d+)/;
 
 BEGIN {
 
-    if( $^O =~ /Win/io ) {
+    if( index($^O, 'Win') >= 0 ) {   # MSWin32 (and not darwin, cygwin, ...)
 
         require Win32::SerialPort;
         import  Win32::SerialPort;
@@ -56,6 +56,8 @@ $Device::Modem::DATABITS = 8;
 $Device::Modem::STOPBITS = 1;
 $Device::Modem::PARITY   = 'none';
 $Device::Modem::TIMEOUT  = 500;     # milliseconds;
+$Device::Modem::WAITCYCLE= 50;
+$Device::Modem::READCHARS= 50;
 
 # Setup text and numerical response codes
 @Device::Modem::RESPONSE = ( 'OK', undef, 'RING', 'NO CARRIER', 'ERROR', undef, 'NO DIALTONE', 'BUSY' );
@@ -560,7 +562,7 @@ sub atsend {
 sub _answer {
     my $me = shift;
     my($expect, $timeout) = @_;
-    my $time_slice = 50;                       # single cycle wait time
+    my $time_slice = $Device::Modem::WAITCYCLE;     # single cycle wait time
 
     # If we expect something, we must first match against serial input
     my $done = (defined $expect and $expect ne '');
@@ -585,7 +587,7 @@ $me->log->write( debug => 'answer: end time set to '.$end_time );
 
     do {
 
-        my($howmany, $what) = $me->port->read(100);
+        my($howmany, $what) = $me->port->read($Device::Modem::READCHARS);
 
         # Timeout count incremented only on empty readings
         if( defined $what && $howmany > 0 ) {
@@ -649,20 +651,28 @@ sub parse_answer {
     my $buff = $me->answer( @_ );
 
     # Separate response code from information
-    my @buff = split /[\r\n]+/o, $buff;
+    if( defined $buff && $buff ne '' ) {
 
-    # Remove all empty lines before/after response
-    shift @buff while $buff[0]  =~ /^[\r\n]+/o;
-    pop   @buff while $buff[-1] =~ /^[\r\n]+/o;
+        my @buff = split /[\r\n]+/o, $buff;
 
-    # Extract responde code
-    $buff = join( CR, @buff );
-    my $code = pop @buff;
+        # Remove all empty lines before/after response
+        shift @buff while $buff[0]  =~ /^[\r\n]+/o;
+        pop   @buff while $buff[-1] =~ /^[\r\n]+/o;
 
-    return
-      wantarray
-      ? ($code, @buff)
-      : $buff;
+        # Extract responde code
+        $buff = join( CR, @buff );
+        my $code = pop @buff;
+
+        return
+            wantarray
+            ? ($code, @buff)
+            : $buff;
+            
+    } else {
+    
+        return '';
+
+    }
 
 }
 
