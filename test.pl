@@ -1,3 +1,5 @@
+# $Id: test.pl,v 1.10 2002/06/05 10:47:50 cosimo Exp $
+#
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
 
@@ -10,6 +12,7 @@ BEGIN { $| = 1; print "1..6\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use lib '.';
 use Modem;
+
 $loaded = 1;
 print "ok 1\n";
 
@@ -19,46 +22,60 @@ print "ok 1\n";
 # (correspondingly "not ok 13") depending on the success of chunk 13
 # of the test code):
 
+
+# Load Makefile settings
+#require '.config.pm';
+
+# If non-win platforms and user is not root, skip tests
+# because they access serial port (only accessible under root user)
+
+my $is_windoze = $^O =~ /Win/i;
+
+if( ! $is_windoze && ( $< || $> ) ) {
+	print "\n\n*** SKIPPING tests. You need root privileges to test modems on serial ports. Sorry\n";
+	print "skip $_\n" for (1..6);
+	exit(0);
+}
+
+
 print "\n\n*** REMEMBER to run these tests as `root' (where required)!\n\n"
-        unless $^O =~ /Win/i;
+        unless( $is_windoze || ( $< + $> == 0 ) );
 
 sleep 1;
 
-my %config;
-if( open CACHED_CONFIG, '< .config' ) {
-	while( <CACHED_CONFIG> ) {
-		my @t = split /[\s\t]+/;
-		$config{ $t[0] } = $t[1];
-	}
-	close CACHED_CONFIG;
-}
+$Device::Modem::port     = $ENV{'DEV_MODEM_PORT'};
+$Device::Modem::baudrate = $ENV{'DEV_MODEM_BAUD'} || 19200;
 
-if( $config{'tty'} ) {
+if( $Device::Modem::port eq 'NONE' || $Device::Modem::port eq '' ) {
 
-	print "Your serial port is `$config{'tty'}' (cached)\n";
-	print "Link baud rate   is `$config{'baud'}' (cached)\n";
+	print <<NOTICE;
+
+    No serial port set up, so *NO* tests will be executed...
+    To enable full testing, you can set these environment vars:
+
+        DEV_MODEM_PORT=[your serial port]    (Ex.: 'COM1', '/dev/ttyS1', ...)
+        DEV_MODEM_BAUD=[serial link speed]   (default is 19200)
+
+    On most unix environments, this can be done running:
+
+        DEV_MODEM_PORT=/dev/modem DEV_MODEM_BAUD=19200 make test
+
+    On Win32 systems, you can do:
+
+        set DEV_MODEM_PORT=COM1
+        set DEV_MODEM_BAUD=19200
+        nmake test (or make test)
+
+NOTICE
+
+	print "skip $_\n" for (2..6);
+
+	exit;
 
 } else {
 
-	$config{'tty'} = $^O =~ /Win32/i ? 'COM1' : '/dev/ttyS1';
-	my $port;
-
-	print "What is your serial port? [$config{'tty'}] ";
-	chomp( $port = <STDIN> );
-
-	$port ||= $config{'tty'};
-
-	$config{'baud'} = 57600;
-	print "What is your default baud speed? [$config{'baud'}] ";
-	chomp( $baud = <STDIN> );
-
-	$baud ||= $config{'baud'};
-	$config{'baud'} = $baud;
-
-	if( open( CONFIG, '>.config' ) ) {
-		print CONFIG "tty\t$port\n", "baud\t$baud\n";
-		close CONFIG;
-	}
+	print "Your serial port is `$Device::Modem::port' (environment configured)\n";
+	print "Link baud rate   is `$Device::Modem::baudrate' (environment configured)\n";
 
 }
 
@@ -76,9 +93,12 @@ my $not_connected_guess;
 # my $modem = new Device::Modem( port => $port, log => 'syslog' );
 
 # test text file logging
+my $port = $Device::Modem::port;
+my $baud = $Device::Modem::baudrate;
+
 my $modem = new Device::Modem( port => $port );
 
-if( $modem->connect(baudrate => $config{'baud'}) ) {
+if( $modem->connect(baudrate => $baud) ) {
 	print "ok 2\n";
 } else {
 	print "not ok 2\n";
