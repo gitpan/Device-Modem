@@ -1,4 +1,4 @@
-# $Id: test.pl,v 1.12 2002/06/17 20:11:19 Cosimo Exp $
+# $Id: test.pl,v 1.13 2002/09/03 20:02:23 cosimo Exp $
 #
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
@@ -8,7 +8,7 @@
 # Change 1..1 below to 1..last_test_to_print .
 # (It may become useful if the test is moved to ./t subdirectory.)
 
-BEGIN { $| = 1; print "1..12\n"; }
+BEGIN { $| = 1; print "1..15\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use lib '.';
 use Modem;
@@ -68,7 +68,7 @@ if( $Device::Modem::port eq 'NONE' || $Device::Modem::port eq '' ) {
 
 NOTICE
 
-	print "skip $_\n" for (2..12);
+	print "skip $_\n" for (2..6);
 
 	exit;
 
@@ -237,10 +237,9 @@ if( $not_connected_guess >= 4 ) {
 	print <<EOT;
 
 --------------------------------------------------------
-Results of your test procedure indicate
-almost certainly that you *DON'T HAVE* a modem device
-connected to your *serial port* or maybe it's the wrong
-port.
+Results of your test procedure indicate almost
+certainly that you *DON'T HAVE* a modem device connected
+to your *serial port* or maybe it's the wrong port.
 --------------------------------------------------------
 
 EOT
