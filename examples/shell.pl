@@ -17,7 +17,7 @@ chomp $port;
 
 $port ||= '/dev/ttyS1';
 
-my $modem = new Device::Modem ( port => $port, baud => 9600 );
+my $modem = new Device::Modem ( port => $port, baud => 19200 );
 my $stop;
 
 die "Could not connect to $port!\n" unless $modem->connect();

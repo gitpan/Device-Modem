@@ -1,30 +1,18 @@
 # Device::Modem - a Perl class to interface generic modems (AT-compliant)
-# Copyright (C) 2000-2002 Cosimo Streppone, cosimo@cpan.org
 #
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
+# Copyright (C) 2002 Cosimo Streppone, cosimo@cpan.org
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# This program is free software; you can redistribute it and/or
+# modify it under the same terms as Perl itself.
 #
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
-# WARNING
-#
-# This is PRE-ALPHA software, still needs extensive testing and
-# support for generic AT commads, so use it at your own risk,
+# Additionally, this is ALPHA software, still needs extensive
+# testing and support for generic AT commads, so use it at your own risk,
 # and without ANY warranty! Have fun.
 #
-# $Id: Modem.pm,v 1.8 2002/04/03 21:30:44 cosimo Exp $
+# $Id: Modem.pm,v 1.10 2002/04/09 22:10:56 cosimo Exp $
 
 package Device::Modem;
-$VERSION = sprintf '%d.%02d', q$Revision: 1.8 $ =~ /(\d)\.(\d+)/; 
+$VERSION = sprintf '%d.%02d', q$Revision: 1.10 $ =~ /(\d)\.(\d+)/; 
 
 use strict;
 use Device::SerialPort;
@@ -219,11 +207,8 @@ sub reset_flags {
 
 sub send_init_string {
 	my($self, $cInit) = @_;
-
 	$self->attention();
-	
 	$self->atsend( 'AT H0 Z S7=45 S0=0 Q0 V1 E0 &C0 X4' . CR );
-
 	$self->answer();
 }
 
@@ -282,8 +267,11 @@ sub connect {
 
 	$me-> send_init_string();
 
+	# Disable local echo
+	$me-> echo(0);
+
 	$me-> log -> write('info', 'Ok connected' );
-	$me->{'CONNECTED'} = 1;
+	$me-> {'CONNECTED'} = 1;
 
 }
 
@@ -499,10 +487,15 @@ Many more to come!
 
 =head1 AUTHOR
 
-Cosimo Streppone, cosimo@cpan.org
+Cosimo Streppone, L<cosimo@cpan.org|mailto:cosimo@cpan.org>
+
+=head1 COPYRIGHT
+
+This library is free software; you can only redistribute it and/or
+modify it under the same terms as Perl itself.
 
 =head1 SEE ALSO
 
-Device::SerialPort(3), perl(1).
+L<Device::SerialPort>, L<perl>.
 
 =cut
