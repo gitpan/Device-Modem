@@ -19,7 +19,9 @@ SYNOPSIS
       }
 
       $modem->attention();          # send `attention' sequence (+++)
-
+ 
+      $modem->dial( '022704690' );  # dial number (*NOT WORKING YET*)
+ 
       $modem->echo(1);              # enable local echo
       $modem->echo(0);              # disable it
 
@@ -32,6 +34,8 @@ SYNOPSIS
 
       $modem->send_init_string();   # Send initialization string
                                     # Now this is fixed to `ATZ0H0V1Q0E0'
+
+      $modem->repeat();             # Repeat last command
 
       $modem->verbose(0);           # Modem responses are numerical
       $modem->verbose(1);           # Normal text responses
@@ -56,6 +60,21 @@ DESCRIPTION
   EXPORT
 
     None
+
+TO-DO
+    *   AutoScan
+
+        An AT command script with all interesting commands is run when
+        `autoscan' is invoked, creating a `profile' of the current device,
+        with list of supported commands, and database of
+        brand/model-specific commands
+
+    *   Time::HiRes
+
+        Check if Time::HiRes module is installed and use it to wait
+        milliseconds instead of whole seconds
+
+    *   Many more to come!
 
 AUTHOR
     Cosimo Streppone, cosimo@cpan.org

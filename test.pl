@@ -34,6 +34,7 @@ if( open CACHED_CONFIG, '< .config' ) {
 if( $config{'tty'} ) {
 
 	print "Your serial port is `$config{'tty'}' (cached)\n";
+	print "Link baud rate   is `$config{'baud'}' (cached)\n";
 
 } else {
 
@@ -42,10 +43,17 @@ if( $config{'tty'} ) {
 
 	print "What is your serial port? [$config{'tty'}] ";
 	chomp( $port = <STDIN> );
+
 	$port ||= $config{'tty'};
+	
+	$config{'baud'} = 57600;
+	print "What is your default baud speed? [$config{'baud'}] ";
+	chomp( $baud = <STDIN> );
+
+	$baud ||= $config{'baud'};
 
 	if( open( CONFIG, '>.config' ) ) {
-		print CONFIG "tty\t$port\n";
+		print CONFIG "tty\t$port\n", "baud\t$baud\n";
 		close CONFIG;
 	}
 
@@ -55,14 +63,25 @@ if( $config{'tty'} ) {
 # BEGIN OF TESTS
 # -----------------------------------------------------
 
-my $modem = new Device::Modem( serial => $port );
+# If tests that increment this counter all *fail*,
+# then almost certainly you don't have a gsm device
+# connected to your serial port or maybe it's the wrong
+# serial port
+my $not_connected_guess;
 
-if( $modem->connect ) {
+# test syslog logging
+# my $modem = new Device::Modem( port => $port, log => 'syslog' );
+
+# test text file logging
+my $modem = new Device::Modem( port => $port );
+
+if( $modem->connect(baudrate => $config{'baud'}) ) {
 	print "ok 2\n";
 } else {
 	print "not ok 2\n";
 	die "cannot connect to $port serial port!: $!";
 }
+
 
 # Try with AT escape code
 my $ans = $modem->attention();
@@ -83,6 +102,7 @@ if( $ans =~ /OK/ ) {
 	print "ok 4\n";
 } else {
 	print "not ok 4\n";
+	$not_connected_guess++;
 }
 
 
@@ -95,6 +115,7 @@ if( $ans =~ /ERROR/ ) {
 	print "ok 5\n";
 } else {
 	print "not ok 5\n";
+	$not_connected_guess++;
 }
 
 $modem->atsend('AT'.Device::Modem::CR);
@@ -108,6 +129,7 @@ if( $ans =~ /OK/ ) {
 	print "ok 6\n";
 } else {
 	print "not ok 6\n";
+	$not_connected_guess++;
 }
 
 
@@ -118,6 +140,7 @@ if( $modem->echo(1) && $modem->echo(0) ) {
 
 } else {
 	print "not ok 7\n";
+	$not_connected_guess++;
 }
 
 print 'testing offhook function...', "\n";
@@ -134,5 +157,25 @@ if( $modem->hangup() =~ /OK/ ) {
 	print "ok 9\n";
 } else {
 	print "not ok 9\n";
+	$not_connected_guess++;
+}
+
+
+if( $not_connected_guess >= 4 ) {
+
+	
+	print <<EOT;
+
+--------------------------------------------------------
+Results of your test procedure indicate
+almost certainly that you *DON'T HAVE* a GSM device
+connected to your *serial port* or maybe it's the wrong
+port.
+--------------------------------------------------------
+
+EOT
+
+	sleep 2;
+
 }
 
