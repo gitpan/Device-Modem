@@ -40,7 +40,7 @@ if( $config{'tty'} ) {
 
 }
 
-my $modem = new Device::Modem( port => $port, log => 'syslog' );
+my $modem = new Device::Modem( port => $port );
 
 if( $modem->connect( baudrate => $config{'baud'} || 19200 ) ) {
 	print "ok connected.\n";

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Device::Modem - Perl extension to talk to modem devices connected via serial port</title>
-<link rev="made" href="mailto:cosimo@cpan.org" />
+<link rev="made" href="mailto:root@midas.slackware.lan" />
 </head>
 
 <body style="background-color: white">
@@ -366,8 +366,12 @@ Usage:</p>
 <h2><a name="is_active()"><code>is_active()</code></a></h2>
 <p>Can be used to check if there is a modem attached to your computer.
 If modem is alive and responding (on serial link, not to a remote call),
-<code>is_active()</code> returns true (1), otherwise returns false (0).
-Example:</p>
+<code>is_active()</code> returns true (1), otherwise returns false (0).</p>
+<p>Test of modem activity is done through DSR (Data Set Ready) signal. If
+this signal is in off state, modem is probably turned off, or not working.
+From my tests I've found that DSR stays in ``on'' state after more or less
+one second I turn off my modem, so know you know that.</p>
+<p>Example:</p>
 <pre>
         if( $modem-&gt;is_active() ) {
                 # Ok!

@@ -1,4 +1,4 @@
-# $Id: test.pl,v 1.14 2002/12/03 22:15:35 cosimo Exp $
+# $Id: test.pl,v 1.17 2003/11/08 17:56:56 cosimo Exp $
 #
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
@@ -32,17 +32,16 @@ print "ok 1\n";
 
 my $is_windoze = $^O =~ /Win/i;
 
-if( ! $is_windoze && ( $< || $> ) ) {
-	print "\n\n*** SKIPPING tests. You need root privileges to test modems on serial ports. Sorry\n";
-	print "skip $_\n" for (1..6);
-	exit(0);
+#if( ! $is_windoze && ( $< || $> ) ) {
+#	print "\n\n*** SKIPPING tests. You need root privileges to test modems on serial ports. Sorry\n";
+#	print "skip $_\n" for (1..6);
+#	exit(0);
+#}
+
+unless( $is_windoze || ($< + $> == 0) ) {
+	print "\n\n*** REMEMBER to run these tests as `root' where required!\n\n";
+	sleep 1;
 }
-
-
-print "\n\n*** REMEMBER to run these tests as `root' (where required)!\n\n"
-        unless( $is_windoze || ( $< + $> == 0 ) );
-
-sleep 1;
 
 $Device::Modem::port     = $ENV{'DEV_MODEM_PORT'};
 $Device::Modem::baudrate = $ENV{'DEV_MODEM_BAUD'} || 19200;
@@ -90,14 +89,13 @@ NOTICE
 # serial port
 my $not_connected_guess;
 
-# test syslog logging
-# my $modem = new Device::Modem( port => $port, log => 'syslog' );
-
 # test text file logging
 my $port = $Device::Modem::port;
 my $baud = $Device::Modem::baudrate;
 
-my $modem = new Device::Modem( port => $port );
+# test syslog logging
+# my $modem = new Device::Modem( port => $port, log => 'syslog', loglevel => 'debug' );
+my $modem = new Device::Modem( port => $port, log => 'file,test.log', loglevel => 'info' );
 
 if( $modem->connect(baudrate => $baud) ) {
 	print "ok 2\n";
@@ -215,6 +213,20 @@ if( $v1 eq $v5 && $v1 == $v5 &&
 	print "not ok 11\n";
 }
 
+# --- 12 ---
+print 'test reading several lines of data (maybe this test fails, it is badly written) ...', "\n";
+
+$modem->atsend('ATI4'.Device::Modem::CR);
+$ans = $modem->answer();
+# Probably here ans is ERROR, or something else that depends on modem model
+if( length($ans) < 5 || length($ans) > 300 ) {
+	print "ok 12\n";
+} else {
+	print "nok 12\n";
+}
+
+# --- 13 ---
+
 print 'testing status of modem signals...', "\n";
 
 my $signals_on = 0;
@@ -225,9 +237,9 @@ foreach( keys %status ) {
 }
 
 if( $signals_on > 1 ) {
-	print "ok 12\n";
+	print "ok 13\n";
 } else {
-	print "not ok 12\n";
+	print "not ok 13\n";
 	$not_connected_guess++;
 }
 
