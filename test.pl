@@ -65,9 +65,8 @@ if( $modem->connect ) {
 }
 
 # Try with AT escape code
-$modem->atsend('+++');
-my $ans = $modem->answer();
-print 'sending +++, modem says `', $ans, "'\n";
+my $ans = $modem->attention();
+print 'sending attention, modem says `', $ans, "'\n";
 
 if( $ans eq '' ) {
 	print "ok 3\n";
