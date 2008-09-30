@@ -1,5 +1,5 @@
 # Device::Modem - a Perl class to interface generic modems (AT-compliant)
-# Copyright (C) 2002-2007 Cosimo Streppone, cosimo@cpan.org
+# Copyright (C) 2002-2008 Cosimo Streppone, cosimo@cpan.org
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
@@ -9,13 +9,10 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # Perl licensing terms for details.
 #
-# Commercial support is available. Write me if you are
-# interested in new features or software support.
-#
-# $Id: Modem.pm,v 1.48 2007/06/24 08:23:10 cosimo Exp $
+# $Id: Modem.pm,v 1.48 2007-06-24 08:23:10 cosimo Exp $
 
 package Device::Modem;
-$VERSION = sprintf '%d.%02d', q$Revision: 1.48 $ =~ /(\d)\.(\d+)/;
+$VERSION = '1.50';
 
 BEGIN {
 
@@ -59,9 +56,9 @@ $Device::Modem::DATABITS = 8;
 $Device::Modem::STOPBITS = 1;
 $Device::Modem::PARITY   = 'none';
 $Device::Modem::TIMEOUT  = 500;     # milliseconds
-$Device::Modem::WAITCYCLE= 20;
+$Device::Modem::WAITCYCLE= 50;
 $Device::Modem::READCHARS= 130;
-$Device::Modem::WAITCMD  = 20; #100;     # milliseconds
+$Device::Modem::WAITCMD  = 200;     # milliseconds
 
 # Setup text and numerical response codes
 @Device::Modem::RESPONSE = ( 'OK', undef, 'RING', 'NO CARRIER', 'ERROR', undef, 'NO DIALTONE', 'BUSY' );
@@ -290,7 +287,7 @@ sub S_register {
             $self->log->write('info', 'value of S'.$register.' register seems to be ['.$value.']');
         } else {
             $value = undef;
-            $self->log->write('error', 'error reading value of S'.$register.' register');
+            $self->log->write('err', 'error reading value of S'.$register.' register');
         }
 
     }
@@ -479,7 +476,7 @@ sub connect {
 
     # Check connection
     unless( ref $me->port ) {
-        $me->log->write( 'error', '*FAILED* connect on '.$me->{'port'} );
+        $me->log->write( 'err', '*FAILED* connect on '.$me->{'port'} );
         return $lOk;
     }
 
@@ -507,7 +504,7 @@ sub connect {
     $oPort -> lookclear;
 
     unless ( $oPort -> write_settings ) {
-        $me->log->write( 'error', '*FAILED* write_settings on '.$me->{'port'} );
+        $me->log->write('err', '*FAILED* write_settings on '.$me->{'port'} );
         return $lOk;
     }
     $oPort -> purge_all;

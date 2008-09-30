@@ -6,7 +6,7 @@
 # ******************************************
 # If it does not work, try with baud = 9600
 #
-# $Id: shell.pl,v 1.6 2005/04/30 21:45:47 cosimo Exp $
+# $Id: shell.pl,v 1.6 2005-04-30 21:45:47 cosimo Exp $
 
 use strict;
 use Device::Modem;

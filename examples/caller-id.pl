@@ -3,7 +3,7 @@
 # Demo of "Caller id" feature: detect who is calling us!
 # Thanks to Marcelo Fernandez (mfernandez@lq.com.ar)
 #
-# $Id: caller-id.pl,v 1.1 2004/08/18 07:29:10 cosimo Exp $
+# $Id: caller-id.pl,v 1.1 2004-08-18 07:29:10 cosimo Exp $
 #
 use Device::Modem;
 

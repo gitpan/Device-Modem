@@ -1,4 +1,4 @@
-# $Id: dial.pl,v 1.3 2005/04/30 21:45:47 cosimo Exp $
+# $Id: dial.pl,v 1.3 2005-04-30 21:45:47 cosimo Exp $
 #
 # This script tries to dial a number taken from STDIN
 # or as first argument.

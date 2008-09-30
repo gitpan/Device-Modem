@@ -14,7 +14,7 @@
 # This Xmodem protocol version is indeed very alpha code,
 # probably does not work at all, so stay tuned...
 #
-# $Id: Xmodem.pm,v 1.7 2005/11/15 22:28:42 cosimo Exp $
+# $Id: Xmodem.pm,v 1.7 2005-11-15 22:28:42 cosimo Exp $
 
 package Xmodem::Constants;
 
@@ -461,6 +461,10 @@ sub _log {
 }
 
 1;
+
+=head1 NAME
+
+Device::Modem::Protocol::Xmodem
 
 =head1 Xmodem::Block
 

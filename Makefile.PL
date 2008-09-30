@@ -1,4 +1,4 @@
-# $Id: Makefile.PL,v 1.6 2005/04/30 21:45:47 cosimo Exp $
+# $Id: Makefile.PL,v 1.6 2005-04-30 21:45:47 cosimo Exp $
 use ExtUtils::MakeMaker;
 
 #print "\n\n", '-' x 60, "\n", ' ' x 20, 'Device::Modem setup', "\n", '-' x 60, "\n\n";
@@ -112,7 +112,7 @@ HELP
 	# Write configuration file
 	if( open CONF, '>.config.pm' ) {
 
-		print CONF "# Device::Modem setup parameters\n# \$Id: Makefile.PL,v 1.6 2005/04/30 21:45:47 cosimo Exp $\n\n";
+		print CONF "# Device::Modem setup parameters\n# \$Id: Makefile.PL,v 1.6 2005-04-30 21:45:47 cosimo Exp $\n\n";
 
 		foreach( sort keys %conf ) {
 			print CONF "\$Device::Modem::$_ = '$conf{$_}';\n";

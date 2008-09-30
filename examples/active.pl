@@ -1,4 +1,4 @@
-# $Id: active.pl,v 1.4 2005/04/30 21:45:47 cosimo Exp $
+# $Id: active.pl,v 1.4 2005-04-30 21:45:47 cosimo Exp $
 #
 # This script tries to test if modem is active (on and enabled)
 # If modem is not active, tries to reset it.
