@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               Device-Modem
-version:            1.50
+version:            1.51
 abstract:           Perl extension to talk to modem devices connected via serial port
 author:
     - Cosimo Streppone <cosimo@cpan.org>
