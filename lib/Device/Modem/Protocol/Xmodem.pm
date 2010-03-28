@@ -14,7 +14,7 @@
 # This Xmodem protocol version is indeed very alpha code,
 # probably does not work at all, so stay tuned...
 #
-# $Id: Xmodem.pm 182 2008-10-29 21:39:16Z Cosimo $
+# $Id$
 
 package Xmodem::Constants;
 

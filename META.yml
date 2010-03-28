@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               Device-Modem
-version:            1.51
+version:            1.52
 abstract:           Perl extension to talk to modem devices connected via serial port
 author:
     - Cosimo Streppone <cosimo@cpan.org>
@@ -10,6 +10,10 @@ configure_requires:
     ExtUtils::MakeMaker:  0
 requires:
     Win32::SerialPort:  0
+resources:
+    bugtracker:  mailto:bug-device-modem@rt.cpan.org
+    license:     http://dev.perl.org/licenses/
+    repository:  git://github.com/cosimo/perl5-device-modem.git
 no_index:
     directory:
         - t

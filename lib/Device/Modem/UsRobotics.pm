@@ -32,7 +32,7 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.       
 #
 #
-# $Id: UsRobotics.pm 182 2008-10-29 21:39:16Z Cosimo $
+# $Id$
 
 package Device::Modem::UsRobotics;
 $VERSION = sprintf '%d.%02d', q$Revision: 1.5 $ =~ /(\d)\.(\d+)/;
